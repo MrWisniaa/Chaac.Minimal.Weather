@@ -4,7 +4,6 @@ import org.kde.plasma.plasmoid
 import org.kde.plasma.components 3.0 as PlasmaComponents3
 import "components" as Components
 import org.kde.kirigami as Kirigami
-import Qt5Compat.GraphicalEffects
 
 ColumnLayout {
     id: fullweather
@@ -16,17 +15,20 @@ ColumnLayout {
     }
 
     property int temperatureUnit: Plasmoid.configuration.temperatureUnit
+
     function sumarDia(a) {
-        var fechaActual = new Date();
-        fechaActual.setDate(fechaActual.getDate() + a);
-        var fechaFormateada = Qt.formatDateTime(fechaActual, "dddd");
-        console.log("Fecha con un día añadido:", fechaFormateada);
-        return fechaFormateada
+        var currentDay = (new Date()).getDay()
+        var day = ((currentDay + a) % 7 ) === 7 ? 0 : (currentDay + a) % 7
+        return day
     }
+
 
     property string tomorrow: sumarDia(1)
     property string dayAftertomorrow: sumarDia(2)
     property string twoDaysAfterTomorrow: sumarDia(3)
+
+
+
 
     Item {
         id: currentWeather
@@ -65,104 +67,41 @@ ColumnLayout {
         width: fullweather.width
         height: fullweather.height / 2
         spacing: 0
+        Repeater {
+            model: 3
+            delegate: Column {
+                height: parent.height
+                width: parent.width/3
+                spacing: parent.height / 18
 
-        Column {
-            id: zero
-            width: (fullweather.width / 5)
-            height: forecastSection.height
-        }
+                PlasmaComponents3.Label {
+                    width: parent.width
+                    text: days[sumarDia((modelData + 1))]
+                    horizontalAlignment: Text.AlignHCenter
+                }
 
-        Column {
-            id: one
-            width: zero.width
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: fullweather.height / 18
-            PlasmaComponents3.Label {
-                width: parent.width
-                text: tomorrow.substring(0, 3)
-                horizontalAlignment: Text.AlignHCenter
-            }
-            Kirigami.Icon {
-                source: weatherData.asingicon(weatherData.codeweatherTomorrow)
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-            Row {
-                width: oneMax.width + oneMin.width
-                anchors.horizontalCenter: parent.horizontalCenter
-                PlasmaComponents3.Label {
-                    id: oneMax
-                    text: Math.round(weatherData.maxweatherTomorrow) + "°  "
-                    horizontalAlignment: Text.AlignHCenter
+                Kirigami.Icon {
+                    source: weatherData.asingicon(weatherData.codeweatherTomorrow)
+                    anchors.horizontalCenter: parent.horizontalCenter
                 }
-                PlasmaComponents3.Label {
-                    id: oneMin
-                    text: Math.round(weatherData.minweatherTomorrow) + "°"
-                    opacity: .5
-                    horizontalAlignment: Text.AlignHCenter
-                }
-            }
-        }
 
-        Column {
-            id: two
-            width: zero.width
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: fullweather.height / 18
-            PlasmaComponents3.Label {
-                width: parent.width
-                text: dayAftertomorrow.substring(0, 3)
-                horizontalAlignment: Text.AlignHCenter
-            }
-            Kirigami.Icon {
-                source: weatherData.asingicon(weatherData.codeweatherDayAftertomorrow)
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-            Row {
-                width: twoMax.width + twoMin.width
-                anchors.horizontalCenter: parent.horizontalCenter
-                PlasmaComponents3.Label {
-                    id: twoMax
-                    text: Math.round(weatherData.maxweatherDayAftertomorrow) + "° "
-                    horizontalAlignment: Text.AlignHCenter
-                }
-                PlasmaComponents3.Label {
-                    id: twoMin
-                    text: Math.round(weatherData.minweatherDayAftertomorrow) + "°"
-                    opacity: .5
-                    horizontalAlignment: Text.AlignHCenter
+                Row {
+                    width: max.width + min.width
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    PlasmaComponents3.Label {
+                        id: max
+                        text: modelData === 0 ? Math.round(weatherData.maxweatherTomorrow) + "°  " :  modelData === 1  ? Math.round(weatherData.maxweatherDayAftertomorrow) + "° " : modelData === 2 ? Math.round(weatherData.maxweatherTwoDaysAfterTomorrow) + "°  " : ""
+                        horizontalAlignment: Text.AlignHCenter
+                    }
+                    PlasmaComponents3.Label {
+                        id: min
+                        text:  modelData === 0 ? Math.round(weatherData.minweatherTomorrow) + "°" :  modelData === 1  ? Math.round(weatherData.minweatherDayAftertomorrow) + "°" : modelData === 2 ? Math.round(weatherData.minweatherTwoDaysAfterTomorrow) + "°" : ""
+                        opacity: .5
+                        horizontalAlignment: Text.AlignHCenter
+                    }
                 }
             }
-        }
 
-        Column {
-            id: three
-            width: zero.width
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: fullweather.height / 18
-            PlasmaComponents3.Label {
-                width: parent.width
-                text: twoDaysAfterTomorrow.substring(0, 3)
-                horizontalAlignment: Text.AlignHCenter
-            }
-            Kirigami.Icon {
-                source: weatherData.asingicon(weatherData.codeweatherTwoDaysAfterTomorrow)
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-            Row {
-                width: threeMax.width + threeMin.width
-                anchors.horizontalCenter: parent.horizontalCenter
-                PlasmaComponents3.Label {
-                    id: threeMax
-                    text: Math.round(weatherData.maxweatherTwoDaysAfterTomorrow) + "°  "
-                    horizontalAlignment: Text.AlignHCenter
-                }
-                PlasmaComponents3.Label {
-                    id: threeMin
-                    text: Math.round(weatherData.minweatherTwoDaysAfterTomorrow) + "°"
-                    opacity: .5
-                    horizontalAlignment: Text.AlignHCenter
-                }
-            }
         }
     }
 
