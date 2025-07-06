@@ -3,10 +3,13 @@ import QtQuick.Controls 2.15
 import "../js/traductor.js" as Traduc
 import "../js/GetInfoApi.js" as GetInfoApi
 import "../js/geoCoordinates.js" as GeoCoordinates
+import "../js/GetCity.js" as GetCity
 import "../js/GetModelWeather.js" as GetModelWeather
 
 Item {
-  signal dataChanged // Definir el signal aquí
+  id: root
+
+  signal dataChanged
 
   function obtener(texto, indice) {
     var palabras = texto.split(/\s+/); // Divide el texto en palabras utilizando el espacio como separador
@@ -21,6 +24,9 @@ Item {
     }
   }
 
+  property bool dataLoadingSuccessful: false
+  property bool timerStarted: false
+  property int retrysTimer: 0
   property string useCoordinatesIp: plasmoid.configuration.useCoordinatesIp
   property string latitudeC: plasmoid.configuration.latitudeC
   property string longitudeC: plasmoid.configuration.longitudeC
@@ -35,6 +41,7 @@ Item {
 
   property string datosweather: "0"
   property string forecastWeather: "0"
+  property int retrysCity: 0
 
   property string oneIcon: asingicon(obtener(forecastWeather, 1))
   property string twoIcon: asingicon(obtener(forecastWeather, 2))
@@ -93,10 +100,16 @@ Item {
   property string windSpeedText: Traduc.windSpeedText(codeleng)
   property int isDay: obtener(datosweather, 8)
   property string city: ""
-  property string prefixIcon: isDay === 1 ? "" : "-night"
+  readonly property string prefixIcon: determinateDay.isday ? "" : "-night"
 
   Component.onCompleted: {
-    updateWeather(2);
+    updateWeather(1);
+  }
+
+  DayOrNight {
+    id: determinateDay
+    latitud: root.latitude
+    longitud: root.longitud
   }
 
   function uvIndexLevelAssignment(nivel) {
@@ -120,22 +133,51 @@ Item {
   }
 
   function getCoordinatesWithIp() {
+    console.log("tercer paso")
     GeoCoordinates.obtenerCoordenadas(function(result) {
+
       completeCoordinates = result;
+      retryCoordinate.start()
+    });
+
+  }
+
+  onObserverCoordenatesChanged: {
+    console.log("Coordenadas cambiaron, actualizando clima");
+    if (latitude && longitud && latitude !== "0" && longitud !== "0") {
+      updateWeather(2);
+      getCityFuncion();
+    } else {
+      console.warn("Coordenadas inválidas, reintentando...");
+      retryCoordinate.start();
+    }
+  }
+
+  function getCityFuncion() {
+
+    if (!latitude || !longitud || latitude === "0" || longitud === "0") {
+      console.error("Coordenadas inválidas para la solicitud de ciudad");
+      return;
+    }
+    GetCity.getNameCity(latitude, longitud, codeleng, function(result) {
+
+      city = result;
+      retrycity.start()
     });
   }
 
   function getWeatherApi() {
     GetInfoApi.obtenerDatosClimaticos(latitude, longitud, day, currentTime, function(result) {
       datosweather = result;
-      checkDataReady(); // Verifica si los datos están listos después de obtener los datos del clima
+      getForecastWeather()
+      retry.start()
     });
   }
 
   function getForecastWeather() {
     GetModelWeather.GetForecastWeather(latitude, longitud, day, therday, function(result) {
       forecastWeather = result;
-      checkDataReady(); // Verifica si los datos están listos después de obtener el pronóstico
+      //retry.start()
     });
   }
 
@@ -173,48 +215,90 @@ Item {
     return b === "preciso" ? iconNamePresicion : iconName;
   }
 
+
   function updateWeather(x) {
-    getWeatherApi();
-    if (x === 2) {
-      //getCityFuncion();
-      getForecastWeather();
+    if (x === 1) {
+
       if (useCoordinatesIp === "true") {
         getCoordinatesWithIp();
       } else {
         if (latitudeC === "0" || longitudC === "0") {
           getCoordinatesWithIp();
+        } else {
+          getWeatherApi()
+
         }
       }
     }
+    ///
+    if (x === 2) {
+      getWeatherApi();
+    }
   }
 
-  function checkDataReady() {
-    // Verificar si forecastWeather y datosweather están disponibles
-    if (forecastWeather !== "0" && datosweather !== "0") {
-      dataChanged(); // Emitir el signal dataChanged cuando los datos estén listos
+
+  Timer {
+    id: retryCoordinate
+    interval: 6000
+    running: false
+    repeat: false
+    onTriggered: {
+      console.log("tercer paso retry", completeCoordinates)
+      if (completeCoordinates === "") {
+        getCoordinatesWithIp();
+      }
+
+    }
+  }
+  Timer {
+    id: retrycity
+    interval: 6000
+    running: false
+    repeat: false
+    onTriggered: {
+      if (city === "unk" && retrysCity < 5) {
+        retrysCity = retrysCity + 1
+        getCityFuncion();
+      }
+    }
+  }
+  Timer {
+    id: retry
+    interval: 5000
+    running: false
+    repeat: false
+    onTriggered: {
+      if (datosweather === "0") {
+        getWeatherApi();
+      }
     }
   }
 
   Timer {
     id: weatherupdate
     interval: 900000
-    running: false
+    running: true
     repeat: true
     onTriggered: {
+      oldCompleteCoordinates = completeCoordinates
       updateWeather(1);
+      veri.start()
     }
   }
 
   Timer {
-    id: forecastTimer
-    interval: 3.6e+6
-    running: true
-    repeat: true
+    id: veri
+    interval: 4000
+    running: false
+    repeat: false
     onTriggered: {
-      getForecastWeather();
+      if (oldCompleteCoordinates === completeCoordinates) {
+        updateWeather(2)
+      }
     }
   }
 
-  onObserverCoordenatesChanged: updateWeather(2)
+
+  onUseCoordinatesIpChanged: updateWeather(1)
 }
 

@@ -2,12 +2,13 @@
     "KPlugin": {
         "Authors": [
             {
+                "Email": "adolfo@librepixels.com",
                 "Name": "zayronxio"
             }
         ],
         "Name": "Minimal chaac weather",
         "Id": "Minimal.chaac.weather",
-        "Description": "widget showing the current weather status",
+        "Description": "widget showing the current weather status.",
         "Category": "Utilities",
         "Icon": "weather",
         "EnabledByDefault": true,
@@ -15,7 +16,7 @@
         "ServiceTypes": [
             "Plasma/Applet"
         ],
-        "Version": "2.4",
+        "Version": "2.6",
         "Website": "https://github.com/zayronxio/Chaac.Minimal.Weather"
     },
     "X-Plasma-API-Minimum-Version": "6.0",

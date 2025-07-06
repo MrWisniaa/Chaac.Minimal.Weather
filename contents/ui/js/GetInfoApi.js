@@ -1,5 +1,5 @@
 function obtenerDatosClimaticos(latitud, longitud, fechaInicio, hours, callback) {
-     let url = `https://api.open-meteo.com/v1/forecast?latitude=${latitud}&longitude=${longitud}&current=temperature_2m,is_day,weather_code,wind_speed_10m&hourly=uv_index&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&start_date=${fechaInicio}&end_date=${fechaInicio}`;
+    let url = `https://api.open-meteo.com/v1/forecast?latitude=${latitud}&longitude=${longitud}&current=temperature_2m,is_day,weather_code,wind_speed_10m&hourly=uv_index&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&start_date=${fechaInicio}&end_date=${fechaInicio}`;
 
      let req = new XMLHttpRequest();
      req.open("GET", url, true);
@@ -9,7 +9,7 @@ function obtenerDatosClimaticos(latitud, longitud, fechaInicio, hours, callback)
              if (req.status === 200) {
                  let datos = JSON.parse(req.responseText);
                  let currents = datos.current;
-                 let isday = currents.is_day
+                 let isday = currents.is_day;
 
                  let temperaturaActual = currents.temperature_2m;
                  let windSpeed = currents.wind_speed_10m;
@@ -28,7 +28,8 @@ function obtenerDatosClimaticos(latitud, longitud, fechaInicio, hours, callback)
                  console.log(`${full}`);
                  callback(full);
              } else {
-                 console.error(`Error en la solicitud: ${req.status}`);
+                 console.error(`Error en la solicitud: weathergeneral ${req.status}`);
+                 //callback(`failed ${req.status}`)
              }
          }
      };

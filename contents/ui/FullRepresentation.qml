@@ -1,5 +1,5 @@
-import QtQuick 2.4
-import QtQuick.Layouts
+import QtQuick
+import QtQuick.Layouts 1.1
 import org.kde.plasma.plasmoid
 import org.kde.plasma.components 3.0 as PlasmaComponents3
 import "components" as Components
