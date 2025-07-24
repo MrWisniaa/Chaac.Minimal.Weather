@@ -336,6 +336,34 @@ function weatherShortText(languageCode, code) {
             96: "폭풍",
             99: "폭풍"
         },
+        pl: {
+            0: "Bezchmurnie",
+            1: "Bezchmurnie",
+            2: "Pochmurno",
+            3: "Pochmurno",
+            51: "Mżawka",
+            53: "Mżawka",
+            55: "Mżawka",
+            56: "Mżawka",
+            57: "Mżawka",
+            61: "Deszcz",
+            63: "Deszcz",
+            65: "Deszcz",
+            66: "Deszcz",
+            67: "Deszcz",
+            71: "Śnieg",
+            73: "Śnieg",
+            75: "Śnieg",
+            77: "Grad",
+            80: "Przelotne",
+            81: "Przelotne",
+            82: "Przelotne",
+            85: "Przelotne",
+            86: "Przelotne",
+            95: "Burza",
+            96: "Burza",
+            99: "Burza"
+        },
         it: {
             0: "Sereno",
             1: "Sereno",
@@ -655,6 +683,34 @@ function weatherLongText(languageCode, code) {
             96: "약한 우박을 동반한 천둥 번개",
             99: "강한 우박을 동반한 천둥 번개"
         },
+        pl: {
+            0: "Bezchmurnie",
+            1: "Przeważnie bezchmurnie",
+            2: "Częściowe zachmurzenie",
+            3: "Całkowite zachmurzenie",
+            51: "Mżawka o słabym natężeniu",
+            53: "Mżawka o umiarkowanym natężeniu",
+            55: "Mżawka o dużym natężeniu",
+            56: "Marznąca mżawka o słabym natężeniu",
+            57: "Marznąca mżawka o dużym natężeniu",
+            61: "Deszcz o słabym natężeniu",
+            63: "Deszcz o umiarkowanym natężeniu",
+            65: "Deszcz o dużym natężeniu",
+            66: "Marznący deszcz o słabym natężeniu",
+            67: "Marznący deszcz o dużym natężeniu",
+            71: "Opady śniegu o słabym natężeniu",
+            73: "Opady śniegu o umiarkowanym natężeniu",
+            75: "Opady śniegu o dużym natężeniu",
+            77: "Ziarna śniegu",
+            80: "Przelotny deszcz o słabym natężeniu",
+            81: "Przelotny deszcz o umiarkowanym natężeniu",
+            82: "Przelotny deszcz o dużym natężeniu",
+            85: "Przelotne opady śniegu o słabym natężeniu",
+            86: "Przelotne opady śniegu o dużym natężeniu",
+            95: "Burza",
+            96: "Burza z drobnym gradem",
+            99: "Burza z dużym gradem"
+        },
         // Agrega más idiomas aquí según sea necesario
     };
 
@@ -678,7 +734,8 @@ function rainProbabilityText(languageCode) {
         "ja": "降雨確率",         // Japanese
         "ko": "비 올 확률",            // Korean
         "nl": "Regenkans",          // Dutch
-        "ny": "Mwayi wamagulu"           // Chichewa
+        "ny": "Mwayi wamagulu",           // Chichewa
+        "pl": "Prawdopodobieństwo deszczu"          // Polish
     };
 
     // Return the translation for the language code or default to English if not found
@@ -771,6 +828,13 @@ function lavelUV(languageCode, lavel) {
             3: "Zeer Hoog",
             4: "Extreem"
         },
+        pl: {
+            0: "Niski",
+            1: "Umiarkowany",
+            2: "Wysoki",
+            3: "Bardzo wysoki",
+            4: "Ekstremalny"
+        },
         ny: {
             0: "Zochepa",
             1: "Apakatikati",
@@ -802,7 +866,8 @@ function windSpeedText(languageCode) {
         "ja": "風速",
         "ko": "풍속",
         "nl": "Windsnelheid",
-        "ny": "Zachitentha"
+        "ny": "Zachitentha",
+        "pl": "Prędkość wiatru"
     };
 
     const shortTranslations = {
@@ -818,7 +883,8 @@ function windSpeedText(languageCode) {
         "ja": "風",
         "ko": "바람",
         "nl": "Wind",
-        "ny": "Mphepo"
+        "ny": "Mphepo",
+        "pl": "Wiatr"
     };
 
     // Get the full translation or default to English if not found
@@ -846,7 +912,8 @@ function uvRadiationText(languageCode) {
         "ja": "UV",
         "ko": "자외선 방사",
         "nl": "UV",
-        "ny": "UV"
+        "ny": "UV",
+        "pl": "UV"
     };
 
     // Return the translation for the language code or default to "UV" if not found

@@ -1,0 +1,838 @@
+diff --git a/contents/locale/pl/LC_MESSAGES/plasma_applet_Minimal.chaac.weather.mo b/contents/locale/pl/LC_MESSAGES/plasma_applet_Minimal.chaac.weather.mo
+new file mode 100644
+index 0000000000000000000000000000000000000000..769e0e90c72649f5c94cfd9fb3578dcc4d1c61c4
+GIT binary patch
+literal 656
+zcmYL`J#P~+9L5b4S`Jl6uy*i{oV%t)4M#yunv_P$l_*JJL?-9nnL75#b_l(djh%(h
+zz(-*1*FZ3_F|x4mIIYNE`rYG~$B$p``-8R51a%i|fgEgtuOQS9a2xytcfc>O4t|3*
+z@aJ0pLc=(@aW%dH4eK_cyWk<XhyL+RLL%q{8vJjdA*X<bd<DG^b=Uom(2(;9iil+e
+z-z~6l)m_eqX1GJBkPG`VmmDg=Exu-+Uy!bqb*%(B=2DRnmzs=Avk=yiu{H}b_QuZ0
+z(3*E*>RCT$uP`NzPU(rUvhiAQUkV$IL}jdJnJZ+@I`hJ@iAibcedW?Pb_fxT^ISBH
+zE#fL}Ztp#5?d-(S@Fg3G_c8>sF83m(&7}F5C3~#7OOqr`l1B+D8gS>?#B%KvM^;LY
+zP6q>e($0Exzn8W9gM)UrJL-+c&tcWYoEL&k1fQjJXq0p%-LKSvl41LmBc+v!vVPWE
+z-D$g#M2ALup|RaXh4Xmv!N--tyF8`Sl3OSIv(w2DYps0YSZBhro}QXq>LR7Bx6((X
+zBkE~6n_Ddf8Jhpi?D895oOANR@|<*qtEV;Iw-(BHEvTtDe#+$+EGkH6Zfj2d0nMkJ
+A4FCWD
+
+literal 0
+HcmV?d00001
+
+diff --git a/contents/ui/GeneralConfig.qml b/contents/ui/GeneralConfig.qml
+index 458aaf4d5084c670a187130ecbddc1ee60d4a4aa..64db4875a988dbd99a0635caefcfb24d3dd5f143 100644
+--- a/contents/ui/GeneralConfig.qml
++++ b/contents/ui/GeneralConfig.qml
+@@ -1,93 +1,110 @@
+ import QtQuick
+ import QtQuick.Controls
+ import org.kde.kirigami as Kirigami
+ import org.kde.plasma.core 2.0 as PlasmaCore
+ 
+ Item {
+     id: configRoot
+ 
+     QtObject {
+         id: unidWeatherValue
+         property var value
+     }
+ 
+     QtObject {
+         id: fontsizeValue
+         property var value
+     }
+ 
++    QtObject {
++        id: widgetSizeValue
++        property var value
++    }
++
++    QtObject {
++        id: cityValue
++        property var value
++    }
++
+     signal configurationChanged
+ 
+     property alias cfg_temperatureUnit: unidWeatherValue.value
+     property alias cfg_sizeFontConfig: fontsizeValue.value
+-    property alias cfg_latitudeC: latitude.text
+-    property alias cfg_longitudeC: longitude.text
++    property alias cfg_cityName: cityField.text
+     property alias cfg_useCoordinatesIp: autamateCoorde.checked
+     property alias cfg_boldfonts: boldfont.checked
+     property alias cfg_textweather: textweather.checked
++    property alias cfg_widgetSize: widgetSizeValue.value
+ 
+     Kirigami.FormLayout {
+         width: parent.width
+ 
+         ComboBox {
+             textRole: "text"
+             valueRole: "value"
+             id: positionComboBox
+             Kirigami.FormData.label: i18n("Temperature Unit:")
+             model: [
+                 {text: i18n("Celsius (°C)"), value: 0},
+                 {text: i18n("Fahrenheit (°F)"), value: 1},
+             ]
+             onActivated: unidWeatherValue.value = currentValue
+             Component.onCompleted: currentIndex = indexOfValue(unidWeatherValue.value)
+         }
+         CheckBox {
+             id: textweather
+             Kirigami.FormData.label: i18n('weather conditions text on panel:')
+         }
+ 
+         CheckBox {
+             id: autamateCoorde
+             Kirigami.FormData.label: i18n('Use IP location')
+         }
+         TextField {
+-            id: latitude
+-            visible: !autamateCoorde.checked
+-            Kirigami.FormData.label: i18n("Latitude:")
+-            width: 200
+-        }
+-        TextField {
+-            id: longitude
++            id: cityField
+             visible: !autamateCoorde.checked
+-            Kirigami.FormData.label: i18n("Longitude:")
++            Kirigami.FormData.label: i18n("City:")
+             width: 200
+         }
+         CheckBox {
+             id: boldfont
+             Kirigami.FormData.label: i18n('Bold font:')
+         }
+         ComboBox {
+             textRole: "text"
+             valueRole: "value"
+             Kirigami.FormData.label: i18n('Font Size:')
+             id: valueForSizeFont
+             model: [
+                 {text: i18n("8"), value: 8},
+                 {text: i18n("9"), value: 9},
+                 {text: i18n("10"), value: 10},
+                 {text: i18n("11"), value: 11},
+                 {text: i18n("12"), value: 12},
+                 {text: i18n("13"), value: 13},
+                 {text: i18n("14"), value: 14},
+                 {text: i18n("15"), value: 15},
+                 {text: i18n("16"), value: 16},
+                 {text: i18n("17"), value: 17},
+                 {text: i18n("18"), value: 18},
+ 
+             ]
+             onActivated: fontsizeValue.value = currentValue
+             Component.onCompleted: currentIndex = indexOfValue(fontsizeValue.value)
+         }
++        ComboBox {
++            textRole: "text"
++            valueRole: "value"
++            Kirigami.FormData.label: i18n('Widget Size:')
++            id: widgetSizeBox
++            model: [
++                {text: i18n('Small'), value: 32},
++                {text: i18n('Medium'), value: 64},
++                {text: i18n('Large'), value: 96},
++            ]
++            onActivated: widgetSizeValue.value = currentValue
++            Component.onCompleted: currentIndex = indexOfValue(widgetSizeValue.value)
++        }
+     }
+ 
+ }
+diff --git a/contents/ui/components/WeatherData.qml b/contents/ui/components/WeatherData.qml
+index 1934eef6195d4d34f550b8074ba4def19ea33aa2..6e5bf0126f66a9209d6538bde340dd9139780acb 100644
+--- a/contents/ui/components/WeatherData.qml
++++ b/contents/ui/components/WeatherData.qml
+@@ -1,61 +1,66 @@
+ import QtQuick 2.15
+ import QtQuick.Controls 2.15
+ import "../js/traductor.js" as Traduc
+ import "../js/GetInfoApi.js" as GetInfoApi
+ import "../js/geoCoordinates.js" as GeoCoordinates
+ import "../js/GetCity.js" as GetCity
+ import "../js/GetModelWeather.js" as GetModelWeather
++import "../js/GetCoordinatesCity.js" as GetCoordinatesCity
+ 
+ Item {
+   id: root
+ 
+   signal dataChanged
+ 
+   function obtener(texto, indice) {
+     var palabras = texto.split(/\s+/); // Divide el texto en palabras utilizando el espacio como separador
+     return palabras[indice - 1]; // El índice - 1 porque los índices comienzan desde 0 en JavaScript
+   }
+ 
+   function fahrenheit(temp) {
+     if (temperatureUnit == 0) {
+       return temp;
+     } else {
+       return Math.round((temp * 9 / 5) + 32);
+     }
+   }
+ 
+   property bool dataLoadingSuccessful: false
+   property bool timerStarted: false
+   property int retrysTimer: 0
+   property string useCoordinatesIp: plasmoid.configuration.useCoordinatesIp
++  property string cityName: plasmoid.configuration.cityName
+   property string latitudeC: plasmoid.configuration.latitudeC
+   property string longitudeC: plasmoid.configuration.longitudeC
++  property string coordinatesByCity: ""
++  property string latitudeCity: coordinatesByCity === "" ? "0" : coordinatesByCity.split(",")[0]
++  property string longitudeCity: coordinatesByCity === "" ? "0" : coordinatesByCity.split(",")[1]
+   property string temperatureUnit: plasmoid.configuration.temperatureUnit
+ 
+-  property string latitude: (useCoordinatesIp === "true") ? latitudeIP : (latitudeC === "0") ? latitudeIP : latitudeC
+-  property string longitud: (useCoordinatesIp === "true") ? longitudIP : (longitudeC === "0") ? longitudIP : longitudeC
++  property string latitude: (useCoordinatesIp === "true") ? latitudeIP : (cityName !== "" ? latitudeCity : latitudeC)
++  property string longitud: (useCoordinatesIp === "true") ? longitudIP : (cityName !== "" ? longitudeCity : longitudeC)
+ 
+   property var observerCoordenates: latitude + longitud
+ 
+   property int currentTime: Number(Qt.formatDateTime(new Date(), "h"))
+ 
+   property string datosweather: "0"
+   property string forecastWeather: "0"
+   property int retrysCity: 0
+ 
+   property string oneIcon: asingicon(obtener(forecastWeather, 1))
+   property string twoIcon: asingicon(obtener(forecastWeather, 2))
+   property string threeIcon: asingicon(obtener(forecastWeather, 3))
+   property string fourIcon: asingicon(obtener(forecastWeather, 4))
+   property string fiveIcon: asingicon(obtener(forecastWeather, 5))
+   property string sixIcon: asingicon(obtener(forecastWeather, 6))
+   property string sevenIcon: asingicon(obtener(forecastWeather, 7))
+   property int oneMax: fahrenheit(obtener(forecastWeather, 8))
+   property int twoMax: fahrenheit(obtener(forecastWeather, 9))
+   property int threeMax: fahrenheit(obtener(forecastWeather, 10))
+   property int fourMax: fahrenheit(obtener(forecastWeather, 11))
+   property int fiveMax: fahrenheit(obtener(forecastWeather, 12))
+   property int sixMax: fahrenheit(obtener(forecastWeather, 13))
+   property int sevenMax: fahrenheit(obtener(forecastWeather, 15))
+   property int oneMin: fahrenheit(obtener(forecastWeather, 14))
+   property int twoMin: fahrenheit(obtener(forecastWeather, 16))
+@@ -120,61 +125,82 @@ Item {
+         return nivel + " " + Traduc.lavelUV(codeleng, 1);
+       } else {
+         if (nivel < 8) {
+           return nivel + " " + Traduc.lavelUV(codeleng, 2);
+         } else {
+           if (nivel < 11) {
+             return nivel + " " + Traduc.lavelUV(codeleng, 3);
+           } else {
+             return nivel + " " + Traduc.lavelUV(codeleng, 4);
+           }
+         }
+       }
+     }
+   }
+ 
+   function getCoordinatesWithIp() {
+     console.log("tercer paso")
+     GeoCoordinates.obtenerCoordenadas(function(result) {
+ 
+       completeCoordinates = result;
+       retryCoordinate.start()
+     });
+ 
+   }
+ 
++  function getCoordinatesFromCityName() {
++    if (!cityName) {
++      return
++    }
++    GetCoordinatesCity.getCoordinates(cityName, function(result) {
++      if (result) {
++        coordinatesByCity = result
++        retryCoordinate.start()
++      } else {
++        console.error("city coords failed")
++        retryCoordinate.start()
++      }
++    })
++  }
++
+   onObserverCoordenatesChanged: {
+     console.log("Coordenadas cambiaron, actualizando clima");
+     if (latitude && longitud && latitude !== "0" && longitud !== "0") {
+       updateWeather(2);
+       getCityFuncion();
+     } else {
+       console.warn("Coordenadas inválidas, reintentando...");
+       retryCoordinate.start();
+     }
+   }
+ 
++  onCityNameChanged: {
++    if (cityName !== "") {
++      getCoordinatesFromCityName()
++    }
++  }
++
+   function getCityFuncion() {
+ 
+     if (!latitude || !longitud || latitude === "0" || longitud === "0") {
+       console.error("Coordenadas inválidas para la solicitud de ciudad");
+       return;
+     }
+     GetCity.getNameCity(latitude, longitud, codeleng, function(result) {
+ 
+       city = result;
+       retrycity.start()
+     });
+   }
+ 
+   function getWeatherApi() {
+     GetInfoApi.obtenerDatosClimaticos(latitude, longitud, day, currentTime, function(result) {
+       datosweather = result;
+       getForecastWeather()
+       retry.start()
+     });
+   }
+ 
+   function getForecastWeather() {
+     GetModelWeather.GetForecastWeather(latitude, longitud, day, therday, function(result) {
+       forecastWeather = result;
+       //retry.start()
+@@ -200,73 +226,83 @@ Item {
+       71: "snow-scattered",
+       73: "snow",
+       75: "snow",
+       77: "hail",
+       80: "showers",
+       81: "showers",
+       82: "showers",
+       85: "snow-scattered",
+       86: "snow",
+       95: "storm",
+       96: "storm",
+       99: "storm",
+     };
+     var iconName = "weather-" + (wmocodes[x] || "unknown");
+     var iconNamePresicion = iconName + prefixIcon
+     return b === "preciso" ? iconNamePresicion : iconName;
+   }
+ 
+ 
+   function updateWeather(x) {
+     if (x === 1) {
+ 
+       if (useCoordinatesIp === "true") {
+         getCoordinatesWithIp();
+       } else {
+-        if (latitudeC === "0" || longitudC === "0") {
++        if (cityName !== "") {
++          getCoordinatesFromCityName();
++        } else if (latitudeC === "0" || longitudC === "0") {
+           getCoordinatesWithIp();
+         } else {
+-          getWeatherApi()
++          getWeatherApi();
+ 
+         }
+       }
+     }
+     ///
+     if (x === 2) {
+       getWeatherApi();
+     }
+   }
+ 
+ 
+   Timer {
+     id: retryCoordinate
+     interval: 6000
+     running: false
+     repeat: false
+     onTriggered: {
+       console.log("tercer paso retry", completeCoordinates)
+-      if (completeCoordinates === "") {
++      if (useCoordinatesIp === "true") {
++        if (completeCoordinates === "") {
++          getCoordinatesWithIp();
++        }
++      } else if (cityName !== "") {
++        if (coordinatesByCity === "") {
++          getCoordinatesFromCityName();
++        }
++      } else if (completeCoordinates === "") {
+         getCoordinatesWithIp();
+       }
+ 
+     }
+   }
+   Timer {
+     id: retrycity
+     interval: 6000
+     running: false
+     repeat: false
+     onTriggered: {
+       if (city === "unk" && retrysCity < 5) {
+         retrysCity = retrysCity + 1
+         getCityFuncion();
+       }
+     }
+   }
+   Timer {
+     id: retry
+     interval: 5000
+     running: false
+     repeat: false
+     onTriggered: {
+       if (datosweather === "0") {
+         getWeatherApi();
+diff --git a/contents/ui/js/GetCoordinatesCity.js b/contents/ui/js/GetCoordinatesCity.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..738fcc441229ac185f14c3084579aaeaa8296b03
+--- /dev/null
++++ b/contents/ui/js/GetCoordinatesCity.js
+@@ -0,0 +1,29 @@
++function getCoordinates(city, callback) {
++    var url = "https://geocoding-api.open-meteo.com/v1/search?count=1&name=" + encodeURIComponent(city);
++    var req = new XMLHttpRequest();
++    req.open("GET", url, true);
++    req.onreadystatechange = function () {
++        if (req.readyState === 4) {
++            if (req.status === 200) {
++                try {
++                    var data = JSON.parse(req.responseText);
++                    if (data && data.results && data.results.length > 0) {
++                        var res = data.results[0];
++                        callback(res.latitude + ", " + res.longitude);
++                    } else {
++                        console.error("City not found");
++                        callback(null);
++                    }
++                } catch (e) {
++                    console.error("Parse error", e);
++                    callback(null);
++                }
++            } else {
++                console.error("Request error: " + req.status);
++                callback(null);
++            }
++        }
++    };
++    req.onerror = function () { callback(null); };
++    req.send();
++}
+diff --git a/contents/ui/js/traductor.js b/contents/ui/js/traductor.js
+index d549640893c67ec5117066a0980f18147149aa17..fcf2954c249172ceed96009a09ad814a4b14190f 100644
+--- a/contents/ui/js/traductor.js
++++ b/contents/ui/js/traductor.js
+@@ -314,50 +314,78 @@ function weatherShortText(languageCode, code) {
+             2: "흐림",
+             3: "흐림",
+             51: "이슬비",
+             53: "이슬비",
+             55: "이슬비",
+             56: "이슬비",
+             57: "이슬비",
+             61: "비",
+             63: "비",
+             65: "비",
+             66: "비",
+             67: "비",
+             71: "눈",
+             73: "눈",
+             75: "눈",
+             77: "우박",
+             80: "소나기",
+             81: "소나기",
+             82: "소나기",
+             85: "소나기",
+             86: "소나기",
+             95: "폭풍",
+             96: "폭풍",
+             99: "폭풍"
+         },
++        pl: {
++            0: "Bezchmurnie",
++            1: "Bezchmurnie",
++            2: "Pochmurno",
++            3: "Pochmurno",
++            51: "Mżawka",
++            53: "Mżawka",
++            55: "Mżawka",
++            56: "Mżawka",
++            57: "Mżawka",
++            61: "Deszcz",
++            63: "Deszcz",
++            65: "Deszcz",
++            66: "Deszcz",
++            67: "Deszcz",
++            71: "Śnieg",
++            73: "Śnieg",
++            75: "Śnieg",
++            77: "Grad",
++            80: "Przelotne",
++            81: "Przelotne",
++            82: "Przelotne",
++            85: "Przelotne",
++            86: "Przelotne",
++            95: "Burza",
++            96: "Burza",
++            99: "Burza"
++        },
+         it: {
+             0: "Sereno",
+             1: "Sereno",
+             2: "Nuvoloso",
+             3: "Nuvoloso",
+             51: "Pioggerella",
+             53: "Pioggerella",
+             55: "Pioggerella",
+             56: "Pioggerella",
+             57: "Pioggerella",
+             61: "Pioggia",
+             63: "Pioggia",
+             65: "Pioggia",
+             66: "Pioggia",
+             67: "Pioggia",
+             71: "Neve",
+             73: "Neve",
+             75: "Neve",
+             77: "Grandine",
+             80: "Rovesci",
+             81: "Rovesci",
+             82: "Rovesci",
+             85: "Rovesci",
+             86: "Rovesci",
+             95: "Tempesta",
+@@ -633,74 +661,103 @@ function weatherLongText(languageCode, code) {
+             2: "부분적으로 흐림",
+             3: "흐림",
+             51: "약한 이슬비",
+             53: "중간 강도의 이슬비",
+             55: "짙은 이슬비",
+             56: "약한 동결 이슬비",
+             57: "강한 동결 이슬비",
+             61: "약한 비",
+             63: "중간 강도의 비",
+             65: "강한 비",
+             66: "약한 동결 비",
+             67: "강한 동결 비",
+             71: "약한 눈",
+             73: "중간 강도의 눈",
+             75: "강한 눈",
+             77: "눈송이",
+             80: "약한 비 샤워",
+             81: "중간 강도의 비 샤워",
+             82: "강한 비 샤워",
+             85: "약한 눈 샤워",
+             86: "강한 눈 샤워",
+             95: "천둥 번개",
+             96: "약한 우박을 동반한 천둥 번개",
+             99: "강한 우박을 동반한 천둥 번개"
+         },
++        pl: {
++            0: "Bezchmurnie",
++            1: "Przeważnie bezchmurnie",
++            2: "Częściowe zachmurzenie",
++            3: "Całkowite zachmurzenie",
++            51: "Mżawka o słabym natężeniu",
++            53: "Mżawka o umiarkowanym natężeniu",
++            55: "Mżawka o dużym natężeniu",
++            56: "Marznąca mżawka o słabym natężeniu",
++            57: "Marznąca mżawka o dużym natężeniu",
++            61: "Deszcz o słabym natężeniu",
++            63: "Deszcz o umiarkowanym natężeniu",
++            65: "Deszcz o dużym natężeniu",
++            66: "Marznący deszcz o słabym natężeniu",
++            67: "Marznący deszcz o dużym natężeniu",
++            71: "Opady śniegu o słabym natężeniu",
++            73: "Opady śniegu o umiarkowanym natężeniu",
++            75: "Opady śniegu o dużym natężeniu",
++            77: "Ziarna śniegu",
++            80: "Przelotny deszcz o słabym natężeniu",
++            81: "Przelotny deszcz o umiarkowanym natężeniu",
++            82: "Przelotny deszcz o dużym natężeniu",
++            85: "Przelotne opady śniegu o słabym natężeniu",
++            86: "Przelotne opady śniegu o dużym natężeniu",
++            95: "Burza",
++            96: "Burza z drobnym gradem",
++            99: "Burza z dużym gradem"
++        },
+         // Agrega más idiomas aquí según sea necesario
+     };
+ 
+     if (descriptions[languageCode]) {
+         return descriptions[languageCode][code] || "Unknown";
+     } else {
+         return "Language not supported";
+     }
+ }
+ function rainProbabilityText(languageCode) {
+     const translations = {
+         es: "Probabilidad de lluvia",         // Spanish
+         "en": "Probability of rain",            // English
+         "hi": "बारिश की संभावना",            // Hindi
+         "fr": "Probabilité de pluie",             // French
+         "de": "Regenwahrscheinlichkeit",       // German
+         "it": "Probabilità di pioggia",          // Italian
+         "pt": "Probabilidade de chuva",   // Portuguese
+         "ru": "Вероятность дождя",               // Russian
+         "zh": "降雨概率",                // Chinese (Mandarin)
+         "ja": "降雨確率",         // Japanese
+         "ko": "비 올 확률",            // Korean
+         "nl": "Regenkans",          // Dutch
+-        "ny": "Mwayi wamagulu"           // Chichewa
++        "ny": "Mwayi wamagulu",           // Chichewa
++        "pl": "Prawdopodobieństwo deszczu"          // Polish
+     };
+ 
+     // Return the translation for the language code or default to English if not found
+     return translations[languageCode] || translations["en"];
+ }
+ 
+ function lavelUV(languageCode, lavel) {
+     const translations = {
+         es: {
+             0: "Bajo",
+             1: "Moderado",
+             2: "Alto",
+             3: "Muy Alto",
+             4: "Extremo"
+         },
+         en: {
+             0: "Low",
+             1: "Moderate",
+             2: "High",
+             3: "Very High",
+             4: "Extreme"
+         },
+         hi: {
+             0: "कम",
+             1: "मध्यम",
+@@ -749,106 +806,116 @@ function lavelUV(languageCode, lavel) {
+             2: "高",
+             3: "很高",
+             4: "极高"
+         },
+         ja: {
+             0: "低い",
+             1: "中程度",
+             2: "高い",
+             3: "非常に高い",
+             4: "極端"
+         },
+         ko: {
+             0: "낮음",
+             1: "보통",
+             2: "높음",
+             3: "매우 높음",
+             4: "극심함"
+         },
+         nl: {
+             0: "Laag",
+             1: "Matig",
+             2: "Hoog",
+             3: "Zeer Hoog",
+             4: "Extreem"
+         },
++        pl: {
++            0: "Niski",
++            1: "Umiarkowany",
++            2: "Wysoki",
++            3: "Bardzo wysoki",
++            4: "Ekstremalny"
++        },
+         ny: {
+             0: "Zochepa",
+             1: "Apakatikati",
+             2: "Wapamwamba",
+             3: "Wapamwamba Kwambiri",
+             4: "Mowopsa"
+         }
+     };
+ 
+     // Return the translation for the language code or default to English if not found
+     if (translations[languageCode]) {
+         return translations[languageCode][lavel] || "Unknown";
+     } else {
+         return "Language not supported";
+     }
+ }
+ 
+ function windSpeedText(languageCode) {
+     const translations = {
+         "es": "Velocidad del viento",
+         "en": "Wind Speed",
+         "hi": "हवा की गति",
+         "fr": "Vitesse du vent",
+         "de": "Windgeschwindigkeit",
+         "it": "Velocità del vento",
+         "pt": "Velocidade do vento",
+         "ru": "Скорость ветра",
+         "zh": "风速",
+         "ja": "風速",
+         "ko": "풍속",
+         "nl": "Windsnelheid",
+-        "ny": "Zachitentha"
++        "ny": "Zachitentha",
++        "pl": "Prędkość wiatru"
+     };
+ 
+     const shortTranslations = {
+         "es": "Viento",
+         "en": "Wind",
+         "hi": "हवा",
+         "fr": "Vent",
+         "de": "Wind",
+         "it": "Vento",
+         "pt": "Vento",
+         "ru": "Ветер",
+         "zh": "风",
+         "ja": "風",
+         "ko": "바람",
+         "nl": "Wind",
+-        "ny": "Mphepo"
++        "ny": "Mphepo",
++        "pl": "Wiatr"
+     };
+ 
+     // Get the full translation or default to English if not found
+     const fullTranslation = translations[languageCode] || translations["en"];
+ 
+     // Return the short translation if the full one is longer than 15 characters
+     if (fullTranslation.length > 15) {
+         return shortTranslations[languageCode] || shortTranslations["en"];
+     }
+ 
+     return fullTranslation;
+ }
+ 
+ function uvRadiationText(languageCode) {
+     const translations = {
+         "es": "UV",
+         "en": "UV",
+         "hi": "यूवी विकिरण",
+         "fr": "UV",
+         "de": "UV",
+         "it": "UV",
+         "pt": "UV",
+         "ru": "УФ-излучение",
+         "zh": "紫外线辐射",
+         "ja": "UV",
+         "ko": "자외선 방사",
+         "nl": "UV",
+-        "ny": "UV"
++        "ny": "UV",
++        "pl": "UV"
+     };
+ 
+     // Return the translation for the language code or default to "UV" if not found
+     return translations[languageCode] || "UV";
+ }
+diff --git a/contents/ui/main.qml b/contents/ui/main.qml
+index cd26fdf0d10b38712a067ffcfa391b264877f42d..bf5aeb2b94f4d43afe16f3f6c758b2c0c6282b37 100644
+--- a/contents/ui/main.qml
++++ b/contents/ui/main.qml
+@@ -1,37 +1,49 @@
+ import QtQuick
+ import QtQuick.Controls
+ import QtQuick.Layouts 1.1
+ import org.kde.kirigami as Kirigami
+ import org.kde.plasma.plasmoid
+ import org.kde.plasma.core as PlasmaCore
+ import org.kde.plasma.plasma5support as Plasma5Support
+ 
+ PlasmoidItem {
+   id: root
+   width: iconAndTem.width
+-
++  height: widgetSize
++  
+   property var days: []
+ 
+   Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground | PlasmaCore.Types.ConfigurableBackground
+   preferredRepresentation: compactRepresentation
+ 
+   property bool boldfonts: plasmoid.configuration.boldfonts
+   property string temperatureUnit: plasmoid.configuration.temperatureUnit
+   property string sizeFontConfg: plasmoid.configuration.sizeFontConfig
++  property int widgetSize: plasmoid.configuration.widgetSize ? plasmoid.configuration.widgetSize : 32
+ 
+   DayOfWeekRow {
+     id: daysWeek
+     visible:  false
+     delegate: Item {
+       Component.onCompleted: {
+         days.push(shortName)
+       }
+     }
+   }
+ 
+   compactRepresentation: CompactRepresentation {
+ 
+   }
+   fullRepresentation: FullRepresentation {
+   }
++
++  Component.onCompleted: {
++    plasmoid.setAction("refresh", i18n("Refresh"), "view-refresh")
++  }
++
++  onActionTriggered: {
++    if (actionName === "refresh") {
++      iconAndTem.weatherData.updateWeather(1)
++    }
++  }
+ }
+diff --git a/translate/pl.po b/translate/pl.po
+new file mode 100644
+index 0000000000000000000000000000000000000000..6e3fae144a86935c6f60718de8aa253ddbfac739
+--- /dev/null
++++ b/translate/pl.po
+@@ -0,0 +1,46 @@
++# Translation of Minimal.Chaac in Polish
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: Nori.Weather\n"
++"Report-Msgid-Bugs-To: https://store.kde.org/p/2179833/\n"
++"POT-Creation-Date: 2023-05-01 16:59-0300\n"
++"PO-Revision-Date: 2025-07-24 00:00+0000\n"
++"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
++"Language-Team: Polish <pl@li.org>\n"
++"Language: pl\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=UTF-8\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++#: ../contents/ui/components/WeatherData.qml
++msgid "Clear"
++msgstr "Bezchmurnie"
++
++#: ../contents/ui/components/WeatherData.qml
++msgid "Cloudy"
++msgstr "Pochmurnie"
++
++#: ../contents/ui/components/WeatherData.qml
++msgid "Drizzle"
++msgstr "Mżawka"
++
++#: ../contents/ui/components/WeatherData.qml
++msgid "Rain"
++msgstr "Deszcz"
++
++#: ../contents/ui/components/WeatherData.qml
++msgid "Snow"
++msgstr "Śnieg"
++
++#: ../contents/ui/components/WeatherData.qml
++msgid "Hail"
++msgstr "Grad"
++
++#: ../contents/ui/components/WeatherData.qml
++msgid "Showers"
++msgstr "Przelotne opady"
++
++#: ../contents/ui/components/WeatherData.qml
++msgid "Storm"
++msgstr "Burza"
+

@@ -5,6 +5,7 @@ import "../js/GetInfoApi.js" as GetInfoApi
 import "../js/geoCoordinates.js" as GeoCoordinates
 import "../js/GetCity.js" as GetCity
 import "../js/GetModelWeather.js" as GetModelWeather
+import "../js/GetCoordinatesCity.js" as GetCoordinatesCity
 
 Item {
   id: root
@@ -28,12 +29,16 @@ Item {
   property bool timerStarted: false
   property int retrysTimer: 0
   property string useCoordinatesIp: plasmoid.configuration.useCoordinatesIp
+  property string cityName: plasmoid.configuration.cityName
   property string latitudeC: plasmoid.configuration.latitudeC
   property string longitudeC: plasmoid.configuration.longitudeC
+  property string coordinatesByCity: ""
+  property string latitudeCity: coordinatesByCity === "" ? "0" : coordinatesByCity.split(",")[0]
+  property string longitudeCity: coordinatesByCity === "" ? "0" : coordinatesByCity.split(",")[1]
   property string temperatureUnit: plasmoid.configuration.temperatureUnit
 
-  property string latitude: (useCoordinatesIp === "true") ? latitudeIP : (latitudeC === "0") ? latitudeIP : latitudeC
-  property string longitud: (useCoordinatesIp === "true") ? longitudIP : (longitudeC === "0") ? longitudIP : longitudeC
+  property string latitude: (useCoordinatesIp === "true") ? latitudeIP : (cityName !== "" ? latitudeCity : latitudeC)
+  property string longitud: (useCoordinatesIp === "true") ? longitudIP : (cityName !== "" ? longitudeCity : longitudeC)
 
   property var observerCoordenates: latitude + longitud
 
@@ -142,6 +147,21 @@ Item {
 
   }
 
+  function getCoordinatesFromCityName() {
+    if (!cityName) {
+      return
+    }
+    GetCoordinatesCity.getCoordinates(cityName, function(result) {
+      if (result) {
+        coordinatesByCity = result
+        retryCoordinate.start()
+      } else {
+        console.error("city coords failed")
+        retryCoordinate.start()
+      }
+    })
+  }
+
   onObserverCoordenatesChanged: {
     console.log("Coordenadas cambiaron, actualizando clima");
     if (latitude && longitud && latitude !== "0" && longitud !== "0") {
@@ -150,6 +170,12 @@ Item {
     } else {
       console.warn("Coordenadas inválidas, reintentando...");
       retryCoordinate.start();
+    }
+  }
+
+  onCityNameChanged: {
+    if (cityName !== "") {
+      getCoordinatesFromCityName()
     }
   }
 
@@ -222,10 +248,12 @@ Item {
       if (useCoordinatesIp === "true") {
         getCoordinatesWithIp();
       } else {
-        if (latitudeC === "0" || longitudC === "0") {
+        if (cityName !== "") {
+          getCoordinatesFromCityName();
+        } else if (latitudeC === "0" || longitudC === "0") {
           getCoordinatesWithIp();
         } else {
-          getWeatherApi()
+          getWeatherApi();
 
         }
       }
@@ -244,7 +272,15 @@ Item {
     repeat: false
     onTriggered: {
       console.log("tercer paso retry", completeCoordinates)
-      if (completeCoordinates === "") {
+      if (useCoordinatesIp === "true") {
+        if (completeCoordinates === "") {
+          getCoordinatesWithIp();
+        }
+      } else if (cityName !== "") {
+        if (coordinatesByCity === "") {
+          getCoordinatesFromCityName();
+        }
+      } else if (completeCoordinates === "") {
         getCoordinatesWithIp();
       }
 

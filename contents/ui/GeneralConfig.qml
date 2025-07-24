@@ -16,15 +16,25 @@ Item {
         property var value
     }
 
+    QtObject {
+        id: widgetSizeValue
+        property var value
+    }
+
+    QtObject {
+        id: cityValue
+        property var value
+    }
+
     signal configurationChanged
 
     property alias cfg_temperatureUnit: unidWeatherValue.value
     property alias cfg_sizeFontConfig: fontsizeValue.value
-    property alias cfg_latitudeC: latitude.text
-    property alias cfg_longitudeC: longitude.text
+    property alias cfg_cityName: cityField.text
     property alias cfg_useCoordinatesIp: autamateCoorde.checked
     property alias cfg_boldfonts: boldfont.checked
     property alias cfg_textweather: textweather.checked
+    property alias cfg_widgetSize: widgetSizeValue.value
 
     Kirigami.FormLayout {
         width: parent.width
@@ -51,15 +61,9 @@ Item {
             Kirigami.FormData.label: i18n('Use IP location')
         }
         TextField {
-            id: latitude
+            id: cityField
             visible: !autamateCoorde.checked
-            Kirigami.FormData.label: i18n("Latitude:")
-            width: 200
-        }
-        TextField {
-            id: longitude
-            visible: !autamateCoorde.checked
-            Kirigami.FormData.label: i18n("Longitude:")
+            Kirigami.FormData.label: i18n("City:")
             width: 200
         }
         CheckBox {
@@ -87,6 +91,19 @@ Item {
             ]
             onActivated: fontsizeValue.value = currentValue
             Component.onCompleted: currentIndex = indexOfValue(fontsizeValue.value)
+        }
+        ComboBox {
+            textRole: "text"
+            valueRole: "value"
+            Kirigami.FormData.label: i18n('Widget Size:')
+            id: widgetSizeBox
+            model: [
+                {text: i18n('Small'), value: 32},
+                {text: i18n('Medium'), value: 64},
+                {text: i18n('Large'), value: 96},
+            ]
+            onActivated: widgetSizeValue.value = currentValue
+            Component.onCompleted: currentIndex = indexOfValue(widgetSizeValue.value)
         }
     }
 
